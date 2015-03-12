@@ -9,3 +9,4 @@ Django Hackathon Starter
 
 * David Leonard
 * Eswari Swarna 
+* Wan Kim Mok
