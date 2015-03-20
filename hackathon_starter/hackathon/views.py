@@ -9,3 +9,6 @@ def index(request):
 
 def test(request):
 	return HttpResponse('meow')
+
+def base(request):
+        return render(request,'hackathon/index.html',context)
