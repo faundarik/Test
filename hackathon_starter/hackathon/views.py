@@ -119,3 +119,7 @@ def github(request):
     context = {'title': 'Github Example'}
     return render(request, 'hackathon/github.html', context)
 
+def tumblr(request):
+    context = {'title': 'Tumblr Example'}
+    return render(request, 'hackathon/tumblr.html', context)
+

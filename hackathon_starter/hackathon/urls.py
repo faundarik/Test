@@ -10,5 +10,6 @@ urlpatterns = patterns('',
     url(r'^logout/$', views.user_logout, name='logout'),
     url(r'^api/$', views.api_examples, name='api'),
     url(r'^steam/$', views.steam, name='steam'),
-    url(r'^github/$', views.github, name='github')
+    url(r'^github/$', views.github, name='github'),
+    url(r'^tumblr/$', views.tumblr, name='tumblr')
 )
