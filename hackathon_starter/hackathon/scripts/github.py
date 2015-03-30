@@ -38,16 +38,32 @@ def getUserData():
 	
 
 def getUserRepositories():
+	# Which page number of data are we looking at?
 	pageNumber = 1
-	firstUrl = API_USERS_URL + '/repos' + '?page=' + str(pageNumber) + '&client_id=2404a1e21aebd902f6db' + '&client_secret=3da44769d4b7c9465fa4c812669148a163607c23'
-	urls = []
-	urls.append(firstUrl)
+
+	# List of all our json
 	jsonList = []
+
+	# List of all repositories
 	repositories = []
+
+	# IDEA: Repeatedly loop over urls and check if the content has less than 30 entries.
+	# 		If it does, then we have iterated over all the data. Time to parse it. 
+	while True:
+		req = requests.get('https://api.github.com/users/DrkSephy/repos?page=' + str(pageNumber) + '&client_id=2404a1e21aebd902f6db&client_secret=3da44769d4b7c9465fa4c812669148a163607c23')
+		jsonList.append(json.loads(req.content))
+		if len(json.loads(req.content)) < 30:
+			break
+		elif len(json.loads(req.content)) >= 30:
+			pageNumber += 1
+
+	print jsonList
+
+	'''
 	while True:
 		req = requests.get(API_USERS_URL + '/repos' + '?page=' + str(pageNumber) + '&client_id=2404a1e21aebd902f6db' + '&client_secret=3da44769d4b7c9465fa4c812669148a163607c23')
-		jsonList.append(json.loads(req.content))
-		for data in jsonList:
+		#jsonList.append(json.loads(req.content))
+		for data in req.content:
 			for datum in data:
 				if len(datum) < 30:
 					print 'hello'
@@ -55,7 +71,8 @@ def getUserRepositories():
 				elif len(datum) >= 30:
 					pageNumber += 1
 					urls.append(API_USERS_URL + '/repos' + '?page=' + str(pageNumber) + '&client_id=2404a1e21aebd902f6db' + '&client_secret=3da44769d4b7c9465fa4c812669148a163607c23')
-	print urls
+	'''
+	#print urls
 	
 	return repositories
 
