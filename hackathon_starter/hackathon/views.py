@@ -5,7 +5,7 @@ from django.template import RequestContext, loader
 from django.contrib.auth import authenticate, login
 from django.http import HttpResponse, HttpResponseRedirect
 from scripts.steam import gamesPulling, steamIDPulling 
-from scripts.github import getUserData, getUserRepositories, getTopContributedRepositories, filterCommits
+from scripts.github import getUserData, getUserRepositories, getTopContributedRepositories, filterCommits, getStarGazerCount
 
 
 def index(request):
@@ -126,10 +126,12 @@ def github(request):
     list = getTopContributedRepositories(repositories)
     # Get a list of the top 10 most committed repositories
     filtered = filterCommits(list)
+    stargazers = getStarGazerCount()
+    print stargazers
     # Store data into a dictionary for rendering
     allData['userData'] = userData
     allData['filteredData'] = filtered
-    
+
     return render(request, 'hackathon/github.html', { 'data': allData })
 
 def tumblr(request):
