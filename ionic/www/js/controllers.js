@@ -9,7 +9,6 @@ angular.module('starter.controllers', ['starter.services'])
 })
 
 .controller('githubUserCtrl', function($scope, githubUser) {
-    $scope.sessions = githubUser.get();
-    console.log($scope.sessions);
+    $scope.githubUserData = githubUser.get();
 })
 
