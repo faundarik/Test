@@ -8,3 +8,4 @@ migrations/
 *.coverage
 Thumbs.db
 */vendor
+ionic/platforms
