@@ -9,3 +9,4 @@ migrations/
 Thumbs.db
 */vendor
 ionic/platforms
+hackathon_starter/_build
