@@ -3,6 +3,7 @@
 instagram.py contains a handful of methods for interacting
 with Instagram data and returning the responses as JSON.
 '''
+
 import requests
 import urllib
 import urllib2
@@ -13,6 +14,9 @@ authorization_url = 'https://api.instagram.com/oauth/authorize/?client_id='
 access_token_url = 'https://api.instagram.com/oauth/access_token'
 
 class InstagramOauthClient(object):
+	'''
+	Python Client for Instagram API.
+	'''
 
 	access_token = None
 	user_data = None
@@ -27,12 +31,15 @@ class InstagramOauthClient(object):
 				- The client_secret from registering application
 				  on Instagram.
 		'''
+
 		self.client_id 		= client_id
 		self.client_secret 	= client_secret
 
 
 	def get_authorize_url(self):
 		''' 
+		Obtains authorize url link with given client_id.
+
 		Returns:
 			auth_url: String
 				- The authorization url.
@@ -44,6 +51,8 @@ class InstagramOauthClient(object):
 
 	def get_access_token(self, code):
 		''' 
+		Obtains access token.
+
 		Parameters:
 			code: String
 				- The code is retrieved from the authorization url parameter
@@ -63,7 +72,7 @@ class InstagramOauthClient(object):
 		jsonlist = json.load(content)
 		self.access_token = jsonlist['access_token']
 		self.user_data = jsonlist['user']
-		print self.user_data
+		#print self.user_data
 		#print self.access_token
 
 
@@ -96,6 +105,8 @@ class InstagramOauthClient(object):
 
 	def get_user_info(self, access_token):
 		'''
+		Get user information.
+
 		Parameters:
 			access_token: String
 				- The access_token given after granting permission
