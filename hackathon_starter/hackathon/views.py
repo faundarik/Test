@@ -77,6 +77,14 @@ def steamDiscountedGames(request):
     return JsonResponse({ 'data': data })
 
 #################
+#  FACEBOOK API #
+#################
+
+def facebook(request):
+    '''A sample application that will publish a status update after going into the login process using the Javascript SDK '''
+    return render(request, 'hackathon/facebook.html')
+    
+#################
 #   GITHUB API  #
 #################
 
