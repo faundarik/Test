@@ -8,12 +8,18 @@ class HackathonViewsTestCase(TestCase):
 		self.assertEqual(resp.status_code, 200)
 
 	def testSteam(self):
-		resp = self.client.get('/hackathon/steam')
-		self.assertEqual(resp.status_code, 301)
+		resp = self.client.get('/hackathon/steam/')
+		self.assertEqual(resp.status_code, 200)
 
 	def testSteamDiscountedGames(self):
 		resp = self.client.get('/hackathon/steamDiscountedGames/')
 		self.assertEqual(resp.status_code, 200)
+
+	def testSteamKeys(self):
+		resp = self.client.get('/hackathon/steam/')
+		for dict in resp.context:
+			if 'playtime_forever' in dict:
+				self.assertTrue('playtime_forever' in dict)
 
 	def testQuandlDowJones(self):
 		resp = self.client.get('/hackathon/quandlDowJones/')
