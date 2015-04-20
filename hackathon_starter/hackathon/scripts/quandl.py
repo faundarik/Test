@@ -12,9 +12,16 @@ def fetchData(apikey, url):
     parsedData = []
     stockData = {}
     for datum in data:
-        stockData['name'] = data['name']
-        stockData['description'] = data['description']
-        stockData['data'] = data['data']
-        stockData['code'] = data['code']
+        if data['code'] == 'COMP':
+    	    stockData['name'] = data['name']
+    	    stockData['description'] = '''The NASDAQ Composite Index measures all 
+    	    NASDAQ domestic and international based common type stocks listed on The NASDAQ Stock Market.'''
+            stockData['data'] = data['data']
+            stockData['code'] = data['code']
+        else:
+            stockData['name'] = data['name']
+            stockData['description'] = data['description']
+            stockData['data'] = data['data']
+            stockData['code'] = data['code']
     parsedData.append(stockData)
     return parsedData

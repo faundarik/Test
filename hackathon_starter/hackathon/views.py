@@ -85,21 +85,21 @@ def facebook(request):
 def quandlDowJones(request):
     '''Returns JSON response about the latest dowjones index.'''
     APIKEY = 'fANs6ykrCdAxas7zpMz7'
-    parsedData = dowjonesIndustrialAvg(APIKEY)
-    print parsedData
-    return JsonResponse({'data': parsedData})
+    dowjonesdata = fetchData(APIKEY, 'https://www.quandl.com/api/v1/datasets/BCB/UDJIAD1.json?')
+    print dowjonesdata
+    return JsonResponse({'data': dowjonesdata})
 
 def quandlSnp500(request):
     '''Returns JSON response about the latest SNP 500 index.'''
     APIKEY = 'fANs6ykrCdAxas7zpMz7'
-    parsedData = snp500IndexPull(APIKEY)
-    return JsonResponse({'data': parsedData})
+    snpdata = fetchData(APIKEY, 'https://www.quandl.com/api/v1/datasets/YAHOO/INDEX_GSPC.json?')
+    return JsonResponse({'data': snpdata})
 
 def quandlNasdaq(request):
     '''Returns JSON response about the latest nasdaq index.'''
     APIKEY = 'fANs6ykrCdAxas7zpMz7'
-    parsedData = nasdaqPull(APIKEY)
-    return JsonResponse({'data': parsedData})
+    nasdaqdata = fetchData(APIKEY, 'https://www.quandl.com/api/v1/datasets/NASDAQOMX/COMP.json?')
+    return JsonResponse({'data': nasdaqdata})
 
 def quandlstocks(request):
     APIKEY = 'fANs6ykrCdAxas7zpMz7'	
