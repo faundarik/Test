@@ -22,7 +22,7 @@ from scripts.quandl import *
 from scripts.twitter import TwitterOauthClient
 from scripts.nytimes import *
 from scripts.meetup import *
-from scripts.linkedin import LinkedInAPI
+from scripts.linkedin import LinkedinOauthClient
 from scripts.yelp import requestData
 
 # Python
@@ -41,8 +41,8 @@ profile_track = None
 getTumblr = TumblrOauthClient(settings.TUMBLR_CONSUMER_KEY, settings.TUMBLR_CONSUMER_SECRET)
 getInstagram = InstagramOauthClient(settings.INSTAGRAM_CLIENT_ID, settings.INSTAGRAM_CLIENT_SECRET)
 getTwitter = TwitterOauthClient(settings.TWITTER_CONSUMER_KEY, settings.TWITTER_CONSUMER_SECRET, settings.TWITTER_ACCESS_TOKEN, settings.TWITTER_ACCESS_TOKEN_SECRET)
-getLinkedIn= LinkedInAPI(settings.LINKEDIN_API_KEY,settings.LINKEDIN_SECRET_KEY,settings.LINKEDIN_USER_TOKEN,settings.LINKEDIN_USER_SECRET)
 getGithub = GithubOauthClient('2a11ce63ea7952d21f02', '7e20f82a34698fb33fc837186e96b12aaca2618d')
+getLinkedIn = LinkedinOauthClient(settings.LINKEDIN_CLIENT_ID, settings.LINKEDIN_CLIENT_SECRET)
 
 def index(request):
     print "index: " + str(request.user)
@@ -98,6 +98,9 @@ def index(request):
                     profile.save()
                 user = authenticate(username=getInstagram.user_data['username']+'_instagram' , password='password')
                 login(request, user)
+            elif profile_track == 'linkedin':
+                code = request.GET['code']
+                getLinkedIn.get_access_token(code)
     else:
         if request.GET.items():
             user = User.objects.get(username = request.user.username)
@@ -444,28 +447,33 @@ def twitterTweets(request):
         if request.method == 'GET':
             if request.GET.items():
                 tweets = request.GET.get('tweets')
-                content = getTwitter.get_tweets(tweets)
+                content, jsonlist = getTwitter.get_tweets(tweets)
             else:
-                content = ''
+                content, jsonlist = '', ''
     else:
         global profile_track
         profile_track = 'twitter'
         twitter_url = getTwitter.get_authorize_url()
         return HttpResponseRedirect(twitter_url)
 
-    context ={'title': 'twitter tweet', 'content': content}
+    context ={'title': 'twitter tweet', 'content': content, 'data': jsonlist}
     return render(request, 'hackathon/twitter_tweet.html', context)
 
 
 ##################
-#  LINKED IN API #
+#  LINKEDIN  API #
 ##################
 
 def linkedin(request):
-    linkedin_url = getLinkedIn.get_authorize_url()
-    return HttpResponseRedirect(linkedin_url)
-    
-    context = {'title': 'linkedin Example','userdata': userinfo}
+    if getLinkedIn.is_authorized:
+        print 'Authorized'
+    else:
+        global profile_track 
+        profile_track = 'linkedin'
+        linkedin_url = getLinkedIn.get_authorize_url()
+        return HttpResponseRedirect(linkedin_url)
+
+    context = {'title': 'linkedin example'}
     return render(request, 'hackathon/linkedin.html', context)
 
 
@@ -578,3 +586,9 @@ def github_login(request):
     profile_track = 'github'
     github_url = getGithub.get_authorize_url()
     return HttpResponseRedirect(github_url)
+
+def linkedin_login(request):
+    global profile_track
+    profile_track = 'linkedin'
+    linkedin_url = getLinkedIn.get_authorize_url()
+    return HttpResponseRedirect(linkedin_url)

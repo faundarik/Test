@@ -1,68 +1,47 @@
 
 
-import urllib
-import urlparse
-import oauth2 as oauth
-import simplejson
+import simplejson as json
+import requests
+import urlparse, urllib
 
+AUTHORIZATION_URL = 'https://www.linkedin.com/uas/oauth2/authorization'
+ACCESS_TOKEN_URL = 'https://www.linkedin.com/uas/oauth2/accessToken'
 
+class LinkedinOauthClient(object):
 
-class LinkedInAPI(object):
-    
-    base_url = 'https://api.linkedin.com'
-    li_url ='http://www.linkedin.com'
+    is_authorized = False
 
-
-    api_profile_connections_url = base_url + '/v1/people/~/connections'
-    api_profile_url = base_url + '/v1/people/~'
-    
-
-    access_token_path = base_url + '/uas/oauth/accessToken'
-    authorize_path = base_url + '/uas/oauth/authorization'
-   
-
-    def __init__(self, ck, cs, ut, us):
-        self.consumer_key = ck
-        self.consumer_secret = cs
-        self.user_token = ut
-        self.user_secret = us
-        self.consumer = oauth.Consumer(self.consumer_key, self.consumer_secret)
+    def __init__(self, client_id, client_secret):
+        self.client_id = client_id
+        self.client_secret = client_secret
 
     def get_authorize_url(self):
+        auth_setting = {'response_type' : 'code',
+                        'client_id' : self.client_id,
+                        'client_secret' : self.client_secret,
+                        'redirect_uri' : 'http://127.0.0.1:8000/hackathon/',
+                        'state' : 'DCEeFWf45A53sdfKef424',
+                        'scope': 'r_basicprofile'}
 
-         li_url ='http://www.linkedin.com'
-         authorize_path = li_url +'/uas/oauth/authorization'
-         auth_url = authorize_path+'?response_type=code'+self.consumer_key+'redirect_uri=https://127.0.0.1:8000/hackathon/linkedin'
-         return auth_url
+        params = urllib.urlencode(auth_setting)
+        authURL = AUTHORIZATION_URL + '?' + params
+        return authURL
 
-    def get_access_token(self, request_token, verifier):
+    def get_access_token(self, code):
+        settings = {'grant_type' : 'authorization_code',
+                    'code' : code,
+                    'redirect_uri' : 'http://127.0.0.1:8000/hackathon/',
+                    'client_id' : self.client_id,
+                    'client_secret': self.client_secret}
 
-        token = self.get_user_token(request_token)
-        token.set_verifier(verifier)
-        return dict(urlparse.parse_qsl(self.request(
-            self.access_token_path, {}, 'POST', token=token)))
+        header = {'content-type' : 'application/x-www-form-urlencoded'}
+        params = urllib.urlencode(settings)
+        link = ACCESS_TOKEN_URL + '?' + params
+        req = requests.post(link)#, headers=header)
 
-    
+        if req.status_code != 200:
+            raise Exception('Invalid response %s' %req.status_code)
 
-    def get_user_connections(self, access_token, selectors=None, query_args=None, headers=None):
-   
-        token = self.get_user_token(access_token)
-        url = self.api_profile_connections_url
-        if selectors:
-            assert type(selectors) == type([]), (
-                '"Keyword argument "selectors" must be of type "list"')
-            url = self.prepare_field_selectors(selectors, url)
-        return simplejson.loads(self.request(
-            url, query_args, 'GET', headers=headers, token=token))
-
-    def get_user_profile(self, access_token, selectors=None, headers=None, **query_args):
-        token = self.get_user_token(access_token)
-        url = self.api_profile_url
-        if selectors:
-            assert type(selectors) == type([]), (
-                '"Keyword argument "selectors" must be of type "list"')
-            url = self.prepare_field_selectors(selectors, url)
-        return simplejson.loads(self.request(
-            url, query_args, 'GET', token=token, headers=headers))
-
-    
+        content = json.loads(req.content)
+        self.access_token = content['access_token']
+        self.is_authorized = True

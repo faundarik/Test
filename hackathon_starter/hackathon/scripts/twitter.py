@@ -16,6 +16,8 @@ import urllib
 import binascii
 import time, collections, hmac, hashlib
 import simplejson as json2
+import codecs
+import json
 
 REQUEST_TOKEN_URL = 'https://api.twitter.com/oauth/request_token'
 ACCESS_TOKEN_URL = 'https://api.twitter.com/oauth/access_token'
@@ -147,7 +149,17 @@ class TwitterOauthClient(object):
 
         content = json2.loads(req.content)
 
-        return content['statuses']
+        jsonlist = {}
+        for contrib in content['statuses']:
+            for e in contrib:
+                if e == 'retweet_count':
+                    if contrib['user']['screen_name'] in jsonlist:
+                        jsonlist[contrib['user']['screen_name']][contrib[e]] = str(contrib['text'].encode('ascii', 'ignore'))
+                    else:
+                        jsonlist[contrib['user']['screen_name']] = { contrib[e]:str(contrib['text'].encode('ascii', 'ignore'))}
+                    
+
+        return content['statuses'], json.dumps(jsonlist)
 
 
     def get_trends_available(self, yahooConsumerKey):

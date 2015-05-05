@@ -44,6 +44,14 @@ class TwitterProfile(models.Model):
     def __unicode__(self):
         return unicode(self.user)
 
+class LinkedinProfile(models.Model):
+    user = models.ForeignKey(User)
+    linkedin_user = models.CharField(max_length=200)
+    access_token = models.CharField(max_length=200)
+
+    def __unicode__(self):
+        return unicode(self.user)
+
 class Snippet(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     title = models.CharField(max_length=100, blank=True, default='')
